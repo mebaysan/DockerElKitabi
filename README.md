@@ -29,7 +29,6 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 ## Docker Engine
 - Docker engine; client-server mimarisinde bir uygulamadır
 - Docker platformunun kalbidir
-- 
 - Docker Daemon, Docker Client, REST API bileşenlerinden (temel) oluşur
 - **Docker Daemon**
   - REST API isteklerini karşılar
