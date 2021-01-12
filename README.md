@@ -11,7 +11,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
   - Kaynak israfı önlenir
   - Her uygulama izole edilmiştir, bu sayede bir uygulamada çıkan sorun diğer uygulamaları etkilemeyecektir
 
-## Container (Linux)
+## Container (Linux)
 
 - Sanallaştırma her ne kadar kaynak israfını minimuma indirse de yine de kaynak israfı mevcuttur. Bu sebeple container'lar hayatımıza girdi.
 - Linux containerlar sayesinde uygulamalar izole bir şekilde çalıştırılabildi fakat bu kolay bir işlem değildi.
@@ -26,8 +26,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Container'lar; host makinede izole olarak çalışan, kullanıcı tarafından her şekilde müdahale edilebilen **sanal birimdir**.
 - Aynı sistem üzerinde çalışırlar, o sistemin çekirdeğini kullanırlar fakat birbirlerinden tamamen izole durumdalardır.
 
-## Docker Engine
-
+## Docker Engine
 - Docker engine; client-server mimarisinde bir uygulamadır
 - Docker platformunun kalbidir
 - 
@@ -42,10 +41,10 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Bir docker engine kurduğumuzda o makinede hem docker server (daemon) hem de docker client (docker cli) kurulmuş olur
 - İstersek bu client (docker cli) uygulamasını localimize kurarak, cloudda kurduğumuz bir server (docker daemon)'ı yönetebiliriz. Yani bu 2 uygulama birbirinden farklıdır.
 
-![docker-components](./static/giris-1.png)
+![docker-components](./static/giris/giris-1.png)
 
-## Image ve Container (Docker)
 
+## Image ve Container (Docker)
 - Docker image'lerde kernel'e gerek yoktur
 - Image'ler birer şablondur
 - Bir image'i bir yerde depolayabilirsem, docker engine sayesinde bu image'i çalıştırabilirim
