@@ -1,15 +1,18 @@
 # Giriş
 
 ## Neden Docker
+
 Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen platformlar listesinde üst sıralarda yer alıyor. İş ilanlarında aranan bir özellik :stuck_out_tongue_winking_eye:
 
 ## Sanallaştırma
+
 - Temelde bir fiziksel makina üzerinde birden fazla sanal makina kurup, kaynak dağıtımını ve ortak kaynak kullanımını sağlayan sisteme verilen isimdir.
 - Bu sayede fiziksel sunuculardaki atıl kapasiteyi minimuma indirebiliriz.
   - Kaynak israfı önlenir
   - Her uygulama izole edilmiştir, bu sayede bir uygulamada çıkan sorun diğer uygulamaları etkilemeyecektir
 
 ## Container (Linux)
+
 - Sanallaştırma her ne kadar kaynak israfını minimuma indirse de yine de kaynak israfı mevcuttur. Bu sebeple container'lar hayatımıza girdi.
 - Linux containerlar sayesinde uygulamalar izole bir şekilde çalıştırılabildi fakat bu kolay bir işlem değildi.
 - **Namespaces**
@@ -24,6 +27,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Aynı sistem üzerinde çalışırlar, o sistemin çekirdeğini kullanırlar fakat birbirlerinden tamamen izole durumdalardır.
 
 ## Docker Engine
+
 - Docker engine; client-server mimarisinde bir uygulamadır
 - Docker platformunun kalbidir
 - 
@@ -41,6 +45,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 ![docker-components](./static/giris-1.png)
 
 ## Image ve Container (Docker)
+
 - Docker image'lerde kernel'e gerek yoktur
 - Image'ler birer şablondur
 - Bir image'i bir yerde depolayabilirsem, docker engine sayesinde bu image'i çalıştırabilirim
