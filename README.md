@@ -20,7 +20,11 @@
 
 
 # Giriş
+Docker öğrenirken aldığım notlar. 
 
+Genellikle Özgür Öztürk'ün [Docker eğitimi](https://www.udemy.com/course/adan-zye-docker/)ni izlerken not aldım.
+
+Elimin altında Türkçe kaynak olması için [Docker ve Konteyner Uygulamaları](https://www.amazon.com.tr/Docker-Konteyner-Uygulamalar%C4%B1-Deniz-Parlak/dp/6058060761/ref=sxts_sxwds-bia-wc-rsf-lq2a1_0?__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&cv_ct_cx=docker&dchild=1&keywords=docker&pd_rd_i=6058060761&pd_rd_r=adeb9eba-433e-4a3e-86e0-e81304013581&pd_rd_w=yeCbD&pd_rd_wg=E8mQH&pf_rd_p=1afd11f1-1dc6-4ec0-a331-2a221d78fd95&pf_rd_r=ZQNNXBF5BV4D5Z92G71P&psc=1&qid=1610552031&sr=1-1-569cd1f4-72a6-4f1d-b3c5-cf7f1ae39fbb) kitabını almıştım ve bazen buradan faydalandım.
 ## Neden Docker
 
 Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen platformlar listesinde üst sıralarda yer alıyor. İş ilanlarında aranan bir özellik :stuck_out_tongue_winking_eye:
