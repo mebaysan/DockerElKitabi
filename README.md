@@ -21,6 +21,7 @@
   - [Docker Network Driver](#docker-network-driver)
   - [Docker Network Objeleri-1](#docker-network-objeleri-1)
   - [Docker Network Objeleri-2-Port Publish](#docker-network-objeleri-2-port-publish)
+  - [Docker Network Objeleri-3](#docker-network-objeleri-3)
 
 
 # Giriş
@@ -124,6 +125,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - `docker container run -d -p 80:80 ozgurozturknet/adanzyedocker`
   - **-d** detach'ten gelmektedir. Container direkt arka planda çalışmaya başlar (terminalimize bağlamaz)
 - `docker container rm <ContainerID>` -> ID'si verilen container'ı siler
+  - illa tam id vermek zorunda değiliz id'nin ilk harflerini versek de olur
   - Çalışan bir container silinemez bunu öncelikle durdurmamız gerekir ya da **-f** parametresi kullanılarak **force** ederek sileriz
   - `docker container prune` 
     - sistemdeki çalışmayan tüm container'ları siler
@@ -233,4 +235,56 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 ## Docker Network Objeleri-2-Port Publish
--  
+-  Ayni bridge üzerindeki container'lar birbirleriyle iletişim kurabilirler Fakat biz dış dünyadan container içerisindeki servislere erişmek istersek **port publish** denilen işlem sayesinde erişebiliriz.
+-  **Örnek olarak** container içerisindeki servis 80 portundan dinliyor. Biz `-p` ya da `--publish` parametresi ile bu portu belirleriz ve bu sayede host makineye 80 portundan gelen istekleri container'ın 80 portuna iletiriz.
+-  Bu işleme **port publish** denir. Notasyon şu şekildedir
+   - `-p <HostPort>:<ContainerPort>`
+   - `-p 80:80` -> örnek
+   - `-p 8080:80 -p 8043:443` -> birden fazla port publish yapabiliriz
+   - **Default olarak TCP portları açılır. Eğer istersek UDP portları açabiliriz**
+     - `-p 80:80/udp`
+
+
+## Docker Network Objeleri-3
+- Container'lar arası network izolasyonu sağlamak istersek ayrı bridge'ler oluşturarak bunu sağlayabiliriz
+  - Default bridge network içerisinde dns çözümlemesi yok
+- Varsayılan dışında ip aralıkları tanımlayabiliriz
+- Kullanıcı tanımlı bridge network'e bağlı container'lar birbirleriyle isimler üzerinden haberleşebilirler. Dns çözümlemesi sağlar
+- Container'lar çalışır durumdayken de kullanıcı tanımlı bridge network'lere bağlanıp, bağlantıyı kesebilirler
+- `docker container run -d --name websunucu ozgurozturknet/adanzyedocker ` -> websunucu adında bir container oluşturuyorum
+- `docker container run -it -d --name database1 ozgurozturknet/adanzyedocker sh` -> database1 adında bir container oluşturup içine giriyorum.
+  - `ping websunucu1` ile ilk container'a erişmeye çalışıyorum
+  - `/usr/src/myapp # ping websunucu`
+    - `ping: websunucu: Name does not resolve` -> o container'a direkt container adı ile erişemiyorum; çünkü default bridge network'de dns çözümlemesi yok
+    - Fakat IP adresi üzerinden erişebiliriz yani aralarında bağlantı var
+- Şimdi container'ları siliyoruz ve kendi bridge'mizi oluşturup container'ları yeniden oluşturacağız
+- `docker network create mybridge` -> mybridge adında bir bridge network oluşturduk. Opsiyon girmediğimiz için default olarak bridge oluşturdu
+  - `docker network create --driver=host myhost` -> host network'u oluşturur
+  - `docker network ls` -> network driver'lar listelenir
+- `docker network inspect mybridge` -> network driver'ımızı inceliyoruz
+- `docker container run -d --name websunucu --net mybridge ozgurozturknet/adanzyedocker` -> websunucu adında bir container oluşturduk ve mybridge driver'ına bağladık
+- `docker container run -d --name database --net mybridge ozgurozturknet/adanzyedocker` -> database adında bir container oluşturduk ve mybridge driver'a bağladık
+- `docker network inspect mybridge` -> mybridge adındaki driver'a bakıyoruz ve bağlı olan container'ları görüyoruz
+- `docker container exec -it websunucu sh` -> websunucu container'ına bağlanıyoruz
+  - `ping database` -> database adındaki container'ı pingliyoruz ve bu sefer başarılı oluyoruz. Çünkü kendimiz bir bridge oluşturduk ve bunun üzerinde container'ları iletişime geçiriyoruz
+- `docker network create --driver=bridge --subnet=10.10.0.0/16 --ip-range=10.10.10.0/24 --gateway=10.10.10.10 mybridge2`  -> istersek oluşturduğumuz bridge'in ağ özelliklerini belirleyebiliriz
+- Kullanıcı tanımlı bridge'lerin en önemli özelliklerinden birisi de container'lar çalışırken bu bridge'lere bağlanabilirler
+- Notasyon şu şekildedir:
+  - `docker network connect <BridgeName> <ContainerName>`
+  - `docker network connect mybridge2 database` -> yukarda oluşturduğumuz database container'ını mybridge2 adındaki network'e bağlıyoruz. Unutmayalım şu an hala çalışan bir container!
+- `docker attach database` -> çalışan bir container olan database'e bağlanıyoruz
+  - `ifconfig`  -> yazdığımızda göreceğiz ki **eth1** (mybridge2) gelmiş
+- `docker network disconnect mybridge2 database` -> database container'ı mybridge2'den düşürüyoruz
+- `docker network rm mybridge2` -> driver'ı sildik (bağlı bir container olmaması gerek)
+
+
+## Logging-Uygulama Günlükleri
+- Docker araçlarını kullanarak loglara erişebiliriz
+- `docker container run -d --name mycont1 ozgurozturknet/app1` -> arka planda mycont1 adında bir container oluştur
+- `docker logs mycont1` -> mycont1 adındaki container'a ait loglar
+- `docker container run -d --name mycont2 -p 80:80 nginx` -> container oluşturup 127.0.0.1 adresine gidip 3-5 kere refresh yapıyorum
+  - `docker logs mycont2` -> container'a ait loglar
+
+
+
+## Docker Logs
