@@ -22,6 +22,9 @@
   - [Docker Network Objeleri-1](#docker-network-objeleri-1)
   - [Docker Network Objeleri-2-Port Publish](#docker-network-objeleri-2-port-publish)
   - [Docker Network Objeleri-3](#docker-network-objeleri-3)
+  - [Logging Uygulama Günlükleri](#logging-uygulama-günlükleri)
+  - [Docker Stats ve Top](#docker-stats-ve-top)
+  - [Container Cpu ve Memory Limitleri](#container-cpu-ve-memory-limitleri)
 
 
 # Giriş
@@ -278,7 +281,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - `docker network rm mybridge2` -> driver'ı sildik (bağlı bir container olmaması gerek)
 
 
-## Logging-Uygulama Günlükleri
+## Logging Uygulama Günlükleri
 - Docker araçlarını kullanarak loglara erişebiliriz
 - `docker container run -d --name mycont1 ozgurozturknet/app1` -> arka planda mycont1 adında bir container oluştur
 - `docker logs mycont1` -> mycont1 adındaki container'a ait loglar
@@ -286,5 +289,27 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
   - `docker logs mycont2` -> container'a ait loglar
 
 
+## Docker Stats ve Top
+- Container; tek bir uygulamanın ya da servisin paketlenmiş halidir, sürekli olarak container içerisine girmeyiz.
+- `docker top <ContainerName>` -> ilgili container içerisinde çalışan process'leri listeler
+- `docker stats <ContainerName>` -> ilgili container'ın ne kadar kaynak kullandığını gösterir
+  - `docker stats` -> tüm container'ların kaynak kullanımını gösterir
 
-## Docker Logs
+
+
+## Container Cpu ve Memory Limitleri
+- **Eğer container oluştururken limitler koymazsak her container; sistem kaynaklarını sınırsız olarak kullanır**
+- `docker container run -dit --name mycont alpine` -> bir container oluşturuyorum
+  - `docker attach mycont` -> komutu ile container'a bağlanabilirim
+  - `ctrl + p q` kombinasyonu ile arka plana atabilirim (çalışmaya devam eder)
+- `docker container run -d --memory=100m alpine` -> max 100mb kullanabilecek bir container oluşturdu
+- `docker container run -dit --name mytest --memory=100m alpine` -> mytest adında bir container oluşturuldu, max 100m kullanabilecek
+  - `m` -> megabyte
+  - `g` -> gigabyte
+  - `k` -> kilobyte
+  - `b` -> byte
+- `docker container run -dit --memory=100m --memory-swap=200m alpine` -> eğer memory limiti aşılsa bile swap olarak 200m daha kullanabilecek
+- `docker container run -dit --cpus="1.5" alpine` -> oluşturduğumuz container sistem içerisinde ne kadar core varsa onun sadece 1.5 tanesini kullanabilecek
+- `docker container run -dit --cpus="1.5" --cpuset-cpus="0,3" alpine` -> sadece cpu 0 ve cpu 3'ü kullanabil dedik
+
+
