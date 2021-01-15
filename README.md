@@ -228,6 +228,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - `docker network inspect bridge` -> bridge NAME'ine sahip objenin özelliklerini listeler
 - `docker container run --net <NetworkObject> <CONTAINER>`
   - `--net` ile network objesini vererek ilgili network'e bağlanabiliriz
+  - `docker container run --net none <CONTAINER>`  -> container'a ağ bağlantısı olmaz (none)
 
 
 
