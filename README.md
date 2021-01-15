@@ -17,6 +17,10 @@
   - [Docker Volume-Container Dışı Veri Saklama](#docker-volume-container-dışı-veri-saklama)
   - [Docker Boş-Dolu Volume Davranışları](#docker-boş-dolu-volume-davranışları)
   - [Bind Mounts](#bind-mounts)
+- [Container 102](#container-102)
+  - [Docker Network Driver](#docker-network-driver)
+  - [Docker Network Objeleri-1](#docker-network-objeleri-1)
+  - [Docker Network Objeleri-2-Port Publish](#docker-network-objeleri-2-port-publish)
 
 
 # Giriş
@@ -132,6 +136,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
     - `it` -> interaktif olarak container'a bağlan demek
     - `docker container exec -it websunucu sh`
       - websunucu container'ına bağlan ve sh komutunu çalıştır (shelle bağlanır)
+    - `ctrl + p q`  kombinasyonu ile Container'ı kapatmadan arka plana alabiliriz
 
 
 ## Docker Katmanlı Dosya Sistemi Yapısı
@@ -196,4 +201,35 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Unutmamalıyız ki bu yöntem development aşamasında kullanılır, kesinlikle production ortamında kullanmamalıyız!
 
 
+# Container 102
 
+## Docker Network Driver
+- Ek protokol vb getirmeden ağ işlemlerini gerçekleştirebiliriz
+- Container sistemlerinin iletişim altyapısını network driver'ları ile sağlıyoruz
+- Temel 5 driver vardır
+  - Bridge
+    - Varsayılan driver'dır
+    - Network objesi oluşturulurken özellikle başka bir driver belirtilmezse bridge driver ile oluşturulur
+    - Her Docker kurulu host üstünde bridge driver ile oluşturulmuş "Bridge" adında network bulunur ve container oluşturulduğunda farklı bir driver belirtilmediği sürece default olarak buna bağlanılır
+  - Host
+    - Her sistemde host driver ile oluşturulmuş "Host" adında bir driver vardır
+    - Bu network'e bağlı container'da network izolasyonu olmaz. O host üzerinde çalışan bir process'mişcesine host'un ağ kaynaklarını kullanır
+  - Macvlan
+    - Bu driver ile oluşturulan network objeleri ile container'lar fiziksel ağlara kendi mac adreslerine sahip birer fiziksel ağ adaptörüne sahipmişcesine bağlanabilir
+  - None
+    - Container'a hiç bir şekilde ağ bağlantısı olmasın istersek None driver kullanılır
+  - Overlay
+    - Ayrı hostlar üzerindeki container'ların aynı ağda çalışıyormuş gibi çalışması istendiği zaman Overlay network'ler kullanılır
+
+
+
+## Docker Network Objeleri-1
+- `docker network ls`  -> sistemdeki kurulu network objeleri listeler
+- `docker network inspect bridge` -> bridge NAME'ine sahip objenin özelliklerini listeler
+- `docker container run --net <NetworkObject> <CONTAINER>`
+  - `--net` ile network objesini vererek ilgili network'e bağlanabiliriz
+
+
+
+## Docker Network Objeleri-2-Port Publish
+-  
