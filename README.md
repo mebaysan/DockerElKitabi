@@ -316,7 +316,6 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 ## Environment Variables (Ortam Değişkenleri)
-- Unix işletim sistemi ile birlikte hayatımıza giren bir kavramdır
 - İşletim sistemi bazında tanımlanan ve her yerden çağrılabilen değişkenlerdir
 - Linux sistemlerde:
   - `printenv` ile tüm ortam değişkenlerini gösterir
