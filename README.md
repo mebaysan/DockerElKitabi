@@ -34,6 +34,8 @@
     - [Dockerfile-2](#dockerfile-2)
     - [Dockerfile-3](#dockerfile-3)
     - [Dockerfile-4](#dockerfile-4)
+    - [Linux Shell Trickleri](#linux-shell-trickleri)
+    - [Dockerfile-5](#dockerfile-5)
 
 
 # Giriş
@@ -447,3 +449,30 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
     - `docker container run --rm -p 80:5000 mebaysan/basitflaskimaj`
       - `--rm` -> container kapanınca otomatik olarak sil (bir daha silmekle uğraşmayalım)
       - `-p` -> bu makinaya 80 portundan gelen istekleri container'ın 5000 portuna yönlendir. Flask uygulaması 5000 portundan ayağa kalktığı için
+
+
+
+### Linux Shell Trickleri
+- `echo` komutu sayesinde bir değeri çıktı olarak verir
+- `>` sayesinde bir komutun çıktısını yönlendiririz
+  - `echo "deneme" > deneme.txt`
+- `&` komutun sonuna eklersek komutu arka plana atar, arkada çalışır
+- `|` 1. komutun çıktısını 2. komuta iletmeye sağlar
+- `cat dosya | grep "naber"` dosya içeriğini okur çıktıyı grep'e yollar, içerisinde naber geçenleri filtreler
+- `ls ; date` -> **;** sayesinde aynı anda birden fazla komut çalıştırmamızı sağlar
+- `&&` -> VE
+- `||` -> VEYA
+
+
+
+### Dockerfile-5
+- Healthcheck konusunu gördüğümüz dosyaya [buradan](./uygulamalar/Dockerfile-5/Dockerfile) bakabilirsiniz
+- İmaj oluşturmak için:
+  - `docker image build -t mebaysan/basichealthcheck .`
+- Bu imajdan container oluşturmak için:
+  - `docker container run -d --name mycont -p 80:80 mebaysan/basichealthcheck`
+- ENV örneği ile container oluşturmak için:
+  - `docker container run -d --name mycont --env KULLANICI="BAYSAN" --env HOSTNAME="MyHOST" -p 80:80 mebaysan/basichealthcheck` -> ortam değişkenleri set ederek container oluşturuyoruz, detaylı açıklama [Dockerfile](./uygulamalar/Dockerfile-5/Dockerfile) içerisindedir
+
+
+
