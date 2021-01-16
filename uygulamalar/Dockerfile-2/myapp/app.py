@@ -1,0 +1,1 @@
+print("Merhaba ben bir konsol uygulamasiyim. Ilk docker imaji icin olusturuldum!")

@@ -26,6 +26,12 @@
   - [Docker Stats ve Top](#docker-stats-ve-top)
   - [Container Cpu ve Memory Limitleri](#container-cpu-ve-memory-limitleri)
   - [Environment Variables (Ortam Değişkenleri)](#environment-variables-ortam-değişkenleri)
+- [Image ve Registry](#image-ve-registry)
+  - [Image İsimlendirme ve Tag Yapısı](#image-i̇simlendirme-ve-tag-yapısı)
+  - [Image oluşturma](#image-oluşturma)
+    - [Dockerfile-1](#dockerfile-1)
+      - [Dockerfile Parametreleri](#dockerfile-parametreleri)
+    - [Dockerfile-2](#dockerfile-2)
 
 
 # Giriş
@@ -331,6 +337,96 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
   - `echo "VAR3=deneme1" >> env.list`
   - Değişkenleri dosya içerisine ekledim
   - `docker container run -it --env-file ./env.list alpine sh` -> **--env-file** parametresi sayesinde liste olarak environment'leri gönderdik
+
+
+
+# Image ve Registry
+
+## Image İsimlendirme ve Tag Yapısı
+- Docker imajına verilen isim aynı zamanda o imajın nerede depolandığını da belirtir
+- Docker imaj adı ile container oluşturabildiğimiz gibi imaj ID'sini de kullanarak imajlardan container oluşturabiliriz
+- Docker imaj yapısı:
+  - `<RegistryURL>/<repository>:<tag>`
+  - `docker.io/mebaysan/test:latest`
+    - **docker.io** olmasının sebebi varsayılan olarak docker hub registry'den imaj çekilmesidir. Eğer istersek farklı registry'leri belirtebiliriz:
+      - `docker image pull gcr.io/google-containers/busybox` -> örnek olarak google image registry'den busy box adındaki imajı çektik
+- Tag'ler sayesinde tek repository içinde birden fazla versiyon tutabiliriz
+- `docker image pull <ImageName>` -> komutu sayesinde local sistemimize bir imajı çekeriz
+  - Tag belirtmediğimiz müddetçe default olarak `latest` tag'ı kullanılır
+
+
+
+## Image oluşturma
+
+### Dockerfile-1
+- Docker imajı oluşturmak istersek öncelikle Dockerfile adında bir dosya oluşturmamız gerekir
+
+#### Dockerfile Parametreleri
+- Daha detaylı bilgi için [buraya](https://github.com/ozgurozturknet/AdanZyeDocker/blob/master/kisim5/bolum47/Dockerfile%20Talimatlari%20Aciklamasi.txt) Özgür hocanın repository'sine bakınız. Bu parametreleri ve açıklamalarını onun reposundan aldım.
+- **FROM** 
+  - Oluşturulacak imajın hangi imajdan oluşturulacağını belirten talimat. Dockerfile içerisinde geçmesi mecburi tek talimat budur. Mutlaka olmalıdır. 
+  - Ör: FROM ubuntu:18.04
+- **LABEL** 
+  - İmaj metadata’sına key=value şeklinde değer çiftleri eklemek için kullanılır. Örneğin team=development şeklinde bir etiket eklenerek bu imajın development ekibinin kullanması için yaratıldığı belirtilebilir.
+  - Ör: LABEL version:1.0.8
+- **RUN**
+  - İmaj oluşturulurken shell’de bir komut çalıştırmak istersek bu talimat kullanılır. Örneğin apt-get install xxx ile xxx isimli uygulamanın bu imaja yüklenmesi sağlanabilir. 
+  - Ör: RUN apt-get update
+- **WORKDIR**
+  - cd xxx komutuyla ile istediğimiz klasöre geçmek yerine bu talimat kullanılarak istediğimiz klasöre geçer ve oradan çalışmaya devam ederiz. 
+  - Ör: WORKDIR /usr/src/app
+- **USER** 
+  - gireceğimiz komutları hangi kullanıcı ile çalıştırmasını istiyorsak bu talimat ile onu seçebiliriz. 
+  - Ör: USER poweruser
+- **COPY**
+  - İmaj içine dosya veya klasör kopyalamak için kullanırız
+  - Ör: COPY /source /user/src/app
+- **ADD**
+  - COPY ile aynı işi yapar yani dosya ya da klasör kopyalarsınız. Fakat ADD bunun yanında dosya kaynağının bir url olmasına da izin verir. Ayrıca ADD ile kaynak olarak bir .tar dosyası belirtilirse bu dosya imaja .tar olarak sıkıştırılmış haliyle değil de açılarak kopyalanır. 
+  - Ör: ADD https://wordpress.org/latest.tar.gz /temp
+- **ENV**
+  - Imaj içinde environment variable tanımlamak için kullanılır
+  - Ör: ENV TEMP_FOLDER="/temp"
+- **ARG**
+  - ARG ile de variable tanımlarsınız. Fakat bu variable sadece imaj oluşturulurken yani build aşamasında kullanılır. Imajın oluşturulmuş halinde bu variable bulunmaz. ENV ile imaj oluşturulduktan sonra da imaj içinde olmasını istediğiniz variable tanımlarsınız, ARG ile sadece oluştururken kullanmanız gereken variable tanımlarsınız.
+  - Ör: ARG VERSION:1.0
+- **VOLUME**
+  - Imaj içerisinde volume tanımlanamızı sağlayan talimat. Eğer bu volume host sistemde varsa container bunu kullanır. Yoksa yeni volume oluşturur. 
+  - Ör: VOLUME /myvol
+- **EXPOSE**
+  - Bu imajdan oluşturulacak containerların hangi portlar üstünden erişilebileceğini yani hangi portların yayınlanacağını bu talimatla belirtirsiniz. 
+  - Ör: EXPOSE 80/tcp
+- **ENTRYPOINT**
+  - Bu talimat ile bir containerın çalıştırılabilir bir uygulama gibi ayarlanabilmesini sağlarsınız.
+  - Ör: ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+- **CMD**
+  - Bu imajdan container yaratıldığı zaman varsayılan olarak çalıştırmasını istediğiniz komutu bu talimat ile belirlersiniz. 
+  - Ör: CMD java merhaba
+- **HEALTHCHECK**
+  - Bu talimat ile Docker'a bir konteynerin hala çalışıp çalışmadığını kontrol etmesini söylebiliriz. Docker varsayılan olarak container içerisinde çalışan ilk processi izler ve o çalıştığı sürece container çalışmaya devam eder. Fakat process çalışsa bile onun düzgün işlem yapıp yapmadığına bakmaz. HEALTHCHECK ile buna bakabilme imkanına kavuşuruz.
+  - Ör: HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost/ || exit 1
+- **SHELL**
+  - Dockerfile'ın komutları işleyeceği shell'in hangisi olduğunu belirtiriz. Linux için varsayılan shell ["/bin/sh", "-c"],Windows için ["cmd", "/S", "/C"]. Bunları SHELL talimatı ile değiştirebiliriz. 
+  - Ör: SHELL ["powershell", "-command"]
+
+
+
+### Dockerfile-2
+- Aşağıdaki örnek senaryo için [buraya](./uygulamalar/Dockerfile-2/Dockerfile) bakabilirsiniz. Comment line'lar ile desteklenmeye çalışıldı.
+  - Ubuntu 18.04 yüklü bir sistem kur
+  - İşletim sistemini güncelle
+  - Python kur
+  - Uygulamayı sisteme kopyala
+  - Sistem başladığında uygulamanın başlamasını ayarla
+- `docker image build -t <ImageTag> -f <DockerFileName> .`
+  - `docker image build -t mebaysan/ilkimaj .`
+    - ilkimaj adında bir imaj oluşturur
+    - **.** -> build context'i belirtiyoruz, eğer Dockerfile içinde COPY vb bir komut varsa bunlar için gerekli dosyaları sen bu çalıştığın klasör içerisinde ara
+    - Dockerfile'ın olduğu dizinde bir adet Dockerfile olduğundan ekstra -f parametresini girmeme gerek yok
+- `docker image ls` komutu ile sistemimizdeki mevcut imajları görebiliriz
+- `docker container run mebaysan/ilkimaj` komutu ile oluşturduğumuz imajdan bir container oluşturduk ve ekran çıktısnı gördük
+- `docker image history <ImageTag>` komutu ile imajın geçmişini görebiliriz
+  - `docker image history mebaysan/ilkimaj`
 
 
 
