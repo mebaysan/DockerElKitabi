@@ -36,6 +36,7 @@
     - [Dockerfile-4](#dockerfile-4)
     - [Linux Shell Trickleri](#linux-shell-trickleri)
     - [Dockerfile-5](#dockerfile-5)
+    - [ADD ve COPY Farkı](#add-ve-copy-farkı)
 
 
 # Giriş
@@ -473,6 +474,15 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
   - `docker container run -d --name mycont -p 80:80 mebaysan/basichealthcheck`
 - ENV örneği ile container oluşturmak için:
   - `docker container run -d --name mycont --env KULLANICI="BAYSAN" --env HOSTNAME="MyHOST" -p 80:80 mebaysan/basichealthcheck` -> ortam değişkenleri set ederek container oluşturuyoruz, detaylı açıklama [Dockerfile](./uygulamalar/Dockerfile-5/Dockerfile) içerisindedir
+
+
+
+### ADD ve COPY Farkı
+- COPY -> belirttiğimiz dosya veya klasörü belirttiğimiz PATH'e atar
+- ADD -> COPY ile aynı işlevi yapar fakat dosya kaynağının bir url olmasına izin verir. Aynı zamanda kaynak dosya bir .tar dosyası ise bunu hedef klasöre decompress olarak atar
+- Detaylar için [buraya](uygulamalar/ADD-COPY-FARKI/Dockerfile) bakabilirsiniz
+- Oluşturduğumuz Dockerfile ile imaj oluşturup aşağıdaki komut ile container oluşturuyoruz ve ADD sonucunu görüyoruz
+  - `docker container run -it mebaysan/wpadd sh`
 
 
 
