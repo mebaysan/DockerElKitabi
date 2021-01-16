@@ -32,6 +32,8 @@
     - [Dockerfile-1](#dockerfile-1)
       - [Dockerfile Parametreleri](#dockerfile-parametreleri)
     - [Dockerfile-2](#dockerfile-2)
+    - [Dockerfile-3](#dockerfile-3)
+    - [Dockerfile-4](#dockerfile-4)
 
 
 # Giriş
@@ -429,4 +431,19 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
   - `docker image history mebaysan/ilkimaj`
 
 
+### Dockerfile-3
+- Localde oluşturduğumuz bir Docker imajını hub'a göndermek için öncelikle CLI'da login olmamız gerekir
+  - `docker login` -> komutu ile login olabiliriz
+- `docker image push <Image>` komutu ile localdeki istediğimiz image'i hub'a pushlayabiliriz
+  - `docker image push mebaysan/ilkimaj` -> ilgili imajı pushlar
 
+
+
+### Dockerfile-4
+- Bir flask uygulamasını container'da çalıştırıyoruz. Daha detaylı bilgi için [buraya](./uygulamalar/Dockerfile-4/pythonapp/) bakabilirsiniz.
+  - O klasördeki Docker imajı oluşturmak için:
+    - `docker image build -t mebaysan/basitflaskimaj .` komutunu kullanıyorum
+  - Oluşturduğum imajdan bir container oluşturmak için:
+    - `docker container run --rm -p 80:5000 mebaysan/basitflaskimaj`
+      - `--rm` -> container kapanınca otomatik olarak sil (bir daha silmekle uğraşmayalım)
+      - `-p` -> bu makinaya 80 portundan gelen istekleri container'ın 5000 portuna yönlendir. Flask uygulaması 5000 portundan ayağa kalktığı için
