@@ -25,6 +25,7 @@
   - [Logging Uygulama Günlükleri](#logging-uygulama-günlükleri)
   - [Docker Stats ve Top](#docker-stats-ve-top)
   - [Container Cpu ve Memory Limitleri](#container-cpu-ve-memory-limitleri)
+  - [Environment Variables (Ortam Değişkenleri)](#environment-variables-ortam-değişkenleri)
 
 
 # Giriş
@@ -311,5 +312,26 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - `docker container run -dit --memory=100m --memory-swap=200m alpine` -> eğer memory limiti aşılsa bile swap olarak 200m daha kullanabilecek
 - `docker container run -dit --cpus="1.5" alpine` -> oluşturduğumuz container sistem içerisinde ne kadar core varsa onun sadece 1.5 tanesini kullanabilecek
 - `docker container run -dit --cpus="1.5" --cpuset-cpus="0,3" alpine` -> sadece cpu 0 ve cpu 3'ü kullanabil dedik
+
+
+
+## Environment Variables (Ortam Değişkenleri)
+- Unix işletim sistemi ile birlikte hayatımıza giren bir kavramdır
+- İşletim sistemi bazında tanımlanan ve her yerden çağrılabilen değişkenlerdir
+- Linux sistemlerde:
+  - `printenv` ile tüm ortam değişkenlerini gösterir
+  - `echo $<EnvName>` -> ilgili değişkenin değerini verir
+  - `export <EnvName>=<EnvValue>` -> değişken tanımlamamızı sağlar
+- `docker container run -it --env VAR1=deneme1 --env VAR2=deneme2 alpine sh` -> container'a 2 adet environment tanımladık. **Environment'ler büyük küçük harf duyarlıdır**. 
+  - Container içerisinde `printenv` kullanırsak (alpine linux olduğundan) tanımladığımız değişkenleri görebiliriz
+- `docker container run -it --env HOME alpine sh` -> eğer environment'e değer atamazsak sistem üzerinde o environment'i arar ve onun değerini atayıp container'a gönderir
+- Eğer istersek bir dosya içerisinde tüm ortam değişkenlerini tanımlayıp tek komut ile de bunu gönderebiliriz
+  - `touch env.list`
+  - `echo "VAR1=deneme1" >> env.list`
+  - `echo "VAR2=deneme1" >> env.list`
+  - `echo "VAR3=deneme1" >> env.list`
+  - Değişkenleri dosya içerisine ekledim
+  - `docker container run -it --env-file ./env.list alpine sh` -> **--env-file** parametresi sayesinde liste olarak environment'leri gönderdik
+
 
 
