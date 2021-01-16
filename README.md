@@ -37,6 +37,7 @@
     - [Linux Shell Trickleri](#linux-shell-trickleri)
     - [Dockerfile-5](#dockerfile-5)
     - [ADD ve COPY Farkı](#add-ve-copy-farkı)
+    - [ENTRYPOINT ve CMD Farkı](#entrypoint-ve-cmd-farkı)
 
 
 # Giriş
@@ -484,5 +485,13 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Oluşturduğumuz Dockerfile ile imaj oluşturup aşağıdaki komut ile container oluşturuyoruz ve ADD sonucunu görüyoruz
   - `docker container run -it mebaysan/wpadd sh`
 
+
+
+### ENTRYPOINT ve CMD Farkı
+- CMD için [buraya](uygulamalar/ENTRYPOINT-CMD-FARKI/cmd/Dockerfile) bakabilirsiniz
+- ENTRYPOINT için [buraya](uygulamalar/ENTRYPOINT-CMD-FARKI/entrypoint/Dockerfile) bakabilirsiniz
+- CMD runtime'da değişebilirken ENTRYPOINT runtime'da değiştirilemez
+- Her image'de en az 1 adet CMD veya ENTRYPOINT olmalıdır
+- Eğer hem CMD hem de ENTRYPOINT varsa, CMD'de yazılanları ENTRYPOINT'e parametre olarak geçer
 
 
