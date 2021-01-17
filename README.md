@@ -49,6 +49,7 @@
     - [Docker Compose CLI](#docker-compose-cli)
     - [Docker Compose Yaml Dosyası](#docker-compose-yaml-dosyası)
     - [Docker Compose Build](#docker-compose-build)
+  - [Container Orchestration](#container-orchestration)
 
 
 # Giriş
@@ -619,4 +620,23 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Compose file içinde ise servisi hazırlarken image yerine `build` key'ini kullanırız ve build olacak Dockerfile'ı aynı dizinde olduğundan `.` ile belirtiriz
 ![compose-build](./static/compose/Screen%20Shot%202021-01-17%20at%2012.17.21.png)
 - Daha detaylı bilgi için [buraya](https://github.com/ozgurozturknet/AdanZyeDocker/tree/master/kisim6/bolum68) bakabiliriz
-- 
+- Kod içerisinde güncelleme yaptığımızda ise önce imajı güncellememiz gerekir. Bunun için de `docker-compose build` komutunu kullanır önce build aldığımız imajı güncelleriz. Sonrasında `docker-compose up` ile servisleri ayağa kaldırırız
+
+
+
+
+## Container Orchestration
+- Container Orchestration, containerların dağıtımını, yönetimini, ölçeklendirilmesini ve ağ oluşturulmasını otomatikleştirme işlemine denir
+- Yüzlerce container'ı bir arada yönetmek için kullanılan yazılımlardır
+- En bilinen araçlar:
+  - **Swarm**
+    - Docker engine ile gelen bir araçtır. Docker tarafından geliştirilmiştir
+    - Bir Docker ana bilgisayar havuzunu tek bir sanal ana bilgisayara dönüştürür
+  - **Kubernetes**
+    - Neredeyse sektör standardı haline gelmiştir
+    - Container uygulamalarının dağıtımını, ölçeklendirilmesini ve yönetimini otomatikleştirmek için oluşturulmuş açık kaynaklı bir sistemdir
+    - Kolay yönetim ve keşif için uygulamayı oluşturan container'ları mantıksal birimler halinde gruplandırır
+    - Google'da 15 yıldan fazla süreye sahip olan container deneyiminin açık kaynak topluluk dünyası üyelerinin tecrübelerine eklenerek oluşturulmuştur
+
+
+
