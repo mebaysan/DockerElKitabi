@@ -42,6 +42,7 @@
     - [Multi-stage Build](#multi-stage-build)
     - [ARG](#arg)
     - [Docker Commit](#docker-commit)
+    - [Docker Save-Load](#docker-save-load)
 
 
 # Giriş
@@ -534,5 +535,16 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Ardından `docker commit <LocalContainerName> <NewImageTag>` komutu ile o container'dan bir imaj oluşturmuş oluruz
   - Ör: `docker commit localcont1 mebaysan/prodcont1:latest`
 - `docker commit -c 'CMD ["command 1", "command 2"]' <LocalContainerName> <NewImageTag>` -> -c parametresi ile CMD, EXPOSE vb. komutları bu imaja ekleyebiliriz
+
+
+### Docker Save-Load
+- Save komutu sayesinde localde oluşturduğumuz bir imajı `.tar` dosyası olarak kayıt edebiliriz, ve internet erişimi olmasa bile (hub'dan çekemiyor demektir) sunucuya atabiliriz
+  - `docker save <LocalImage> -o <filename>.tar`
+    - `docker save mebaysan/test -o mebaysantestimaj.tar`
+-  Load komutu ile `.tar` olarak gelen docker dosyasını sisteme imaj olarak yükleyebiliriz
+   -  `docker load -i <TarFile>`
+      -  `docker load -i mebaysantestimaj.tar`
+
+
 
 
