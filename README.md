@@ -43,6 +43,7 @@
     - [ARG](#arg)
     - [Docker Commit](#docker-commit)
     - [Docker Save-Load](#docker-save-load)
+    - [Registry](#registry)
 
 
 # Giriş
@@ -365,6 +366,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Tag'ler sayesinde tek repository içinde birden fazla versiyon tutabiliriz
 - `docker image pull <ImageName>` -> komutu sayesinde local sistemimize bir imajı çekeriz
   - Tag belirtmediğimiz müddetçe default olarak `latest` tag'ı kullanılır
+- `docker tag ubuntu mebaysan/deneme` -> çektiğimiz ubuntu imajını localde yeniden adlandırdık (öncesinde pull edilmeli tabii). Artık aynı imaja mebaysan/deneme diyerek erişebiliriz.
 
 
 
@@ -520,7 +522,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 ### ARG
 - İmaj oluştururken kullanbildiğimiz bir diğer parametre ise ARG'dır. Sadece build aşamasında kullanılabilir ve sonrasında container ayağa kalktığında erişilemez. 
-- Örnek için buraya bakabilirsiniz.
+- Örnek için [buraya](uygulamalar/ARG/Dockerfile) bakabilirsiniz.
 - Örnek bir Build Arg gönderimi
   - `docker image build -t mytest2 --build-arg VERSION=3.8.1 .`
 
@@ -544,6 +546,28 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 -  Load komutu ile `.tar` olarak gelen docker dosyasını sisteme imaj olarak yükleyebiliriz
    -  `docker load -i <TarFile>`
       -  `docker load -i mebaysantestimaj.tar`
+
+
+
+
+### Registry
+- Kendi ağımızda ücretsiz olarak bir docker deposu oluşturabiliriz
+- Bunun için yine Docker Hub üzerinden :blush:  [registry](https://hub.docker.com/_/registry) imajını kullanacağız
+  - Bu imaj sayesinde bir container çalıştıracağız. İçerisinde docker hub'a benzer bir yazılım çalıştırıyor. 5000 portundan ayağa kalkıyor.
+  - `docker pull registry` imajı locale çekiyoruz
+  - `docker container run -d -p 5000:5000 --restart always --name registry registry` 
+    - restart parametresi container down olduğunda ne yapılacağını alır
+      - `always` -> down olunca ne olursa olsun restart at
+      - `no` -> down olunca bir şey yapma
+      - `on-failure` -> sadece hata olur da kapanırsa yeniden başlat fakat biz elimizle manuel kapatırsak yeniden başlatma
+      - `unless-stopped` -> manuel olarak stop edersek başlatmaz fakat geri kalan her durumda başlatır
+    - 5000 portunu 5000 portuna publish ettik
+    - registy adındaki container'ı registry imajından oluşturduk
+  - `http://127.0.0.1:5000/` altında çalışmaya başlar
+  - `http://127.0.0.1:5000/v2/_catalog` altında kayıtlı repoları gösterir,
+  - `localcont1` adında bir imaj oluşturduğumuzu varsayalım
+    - `docker push localhost:5000/localcont1`  -> localdeki imajı registry'e kayıt etti
+    - `docker pull localhost:5000/localcont1` bu adrese erişebilen makinalar; komutu ile local registry'deki imajı çekebilir
 
 
 
