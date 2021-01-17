@@ -38,6 +38,8 @@
     - [Dockerfile-5](#dockerfile-5)
     - [ADD ve COPY Farkı](#add-ve-copy-farkı)
     - [ENTRYPOINT ve CMD Farkı](#entrypoint-ve-cmd-farkı)
+    - [Exec Form ve Shell Form Farkı](#exec-form-ve-shell-form-farkı)
+    - [Multi-stage Build](#multi-stage-build)
 
 
 # Giriş
@@ -155,6 +157,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
     - `docker container exec -it websunucu sh`
       - websunucu container'ına bağlan ve sh komutunu çalıştır (shelle bağlanır)
     - `ctrl + p q`  kombinasyonu ile Container'ı kapatmadan arka plana alabiliriz
+- `docker cp basitapp:/app .` -> **container'ın kapanmış olması önemli değil yeter ki silinmemiş olsun.** basitapp adındaki container'ın app klasörünü host makinadaki bu dizine kopyala dedik.
 
 
 ## Docker Katmanlı Dosya Sistemi Yapısı
@@ -493,5 +496,23 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - CMD runtime'da değişebilirken ENTRYPOINT runtime'da değiştirilemez
 - Her image'de en az 1 adet CMD veya ENTRYPOINT olmalıdır
 - Eğer hem CMD hem de ENTRYPOINT varsa, CMD'de yazılanları ENTRYPOINT'e parametre olarak geçer
+
+
+### Exec Form ve Shell Form Farkı
+- Exec Form => `CMD ["python", "app.py"]`
+- Shell Form => `CMD python app.py`
+- Eğer komut Shell formunda girilirse bu imajdan container oluşturulduğu zaman bu komutu varsayılan shell'i çalıştırarak onun içerisinde çalıştırır. Bu nedenle container'da çalışan 1. process (pid 1) bu shell process olur
+- Eğer komut Exec formunda girildiyse herhangi bir shell çalıştırılmaz ve komut direk process olarak çalışır. Container'ın pid 1'i o process olur
+- Exec formunda çalıştırılan komutlar herhangi bir shell processi çalışmadığı için Environment Variable gibi bazı değerlere erişemezler.
+- Eğer ENTRYPOINT ve CMD birlikte kullanılacaksa Exec form kullanılmalıdır. Shell formda CMD'deki komutlar ENTRPOINT'e parametre olarak aktarılmaz
+
+
+
+### Multi-stage Build
+- İmaj oluştururken, oluşturma aşamalarını kademelere bölmemize ve ilk kademede yarattığımız imaj içerisindeki dosyaları bir sonraki kademede oluşturacağımız imaja kopyalayabilmemize imkan sağlar. Bu sayede son imajımızın boyutunun küçülmesi sağlanır.
+  - Ör: Bir Go uygulaması yazdık ve bunu derleyip sunucuya göndereceğiz, imaj oluştururken önce kodu derler çalışan bir halini hazırlarız. Sonrasında bu çalışan derlenmiş dosyayı 2. aşamada nihai imaja koyar ve imajı oluştururuz. Bu sayede gereksiz yere kaynak kodlarını veya go derleyicisini imaj içerisinde tutmamıza gerek kalmaz
+- Örnekler için [buraya](uygulamalar/MultiStageBuild/Dockerfile) bakabilirsiniz
+
+
 
 
