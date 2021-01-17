@@ -58,6 +58,7 @@
     - [Swarm Service](#swarm-service)
     - [Overlay Network](#overlay-network)
 - [Docker Secret](#docker-secret)
+- [Docker Stack](#docker-stack)
 
 
 # Giriş
@@ -621,7 +622,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 ### Docker Compose Yaml Dosyası
-- Detaylar için [buraya](uygulamalar/Compose&Swarm/intro/docker-compose.yml) bakabilirsiniz
+- Detaylar için [buraya](uygulamalar/Compose/intro/docker-compose.yml) bakabilirsiniz
 - İlgili dizinde `docker-compose up -d` komutu sayesinde bu config dosyasından sistemi ayağa kaldırıyorum. `http://127.0.0.1/` adresine gittiğimizde başarılı bir şekilde wordpress kurulumunu görmüş olacağız
 
 
@@ -773,5 +774,17 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 
-
-
+# Docker Stack
+- Docker Compose'daki gibi bir işleme benzer. Stack de bunu swarm ortamında yapmamızı sağlar.
+- docker-compose.yml dosyası kullanır
+- Docker Compose dosyası ile arasında bazı farklar var
+  - Docker Engine ile tanımlı komutlar Compose ile kullanılabilirken Stack için kullanılamaz
+  - Stack için uygun olan komutlar Compose ile kullanılamaz
+- İlgili dosyanın bulunduğu dizine gidiyorum
+- `docker stack ls` -> oluşturduğumuz stckleri listeler
+- `docker stack ps` -> stack altındaki taskları görebiliriz
+- `docker stack rm <StackName>` -> ilgili stack i siler
+- `docker stack services <StackName>` -> ilgili stack altındaki servisleri listeler
+- `docker stack deploy -c ./docker-compose.yml ilkstack` -> docker-compose.yml'dan bir stack oluşturur ve ayağa kaldırır.
+  - ilkstack adındaki stack'i bu dizindeki docker-compose.yml dosyasından oluşturur
+  - **stacklerde docker-compose.yml pathini belirtmemiz gerekir**

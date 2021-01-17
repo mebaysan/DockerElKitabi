@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+
+
+  veritabani:
+    image: mysql:5.7
+    volumes:
+      - verilerim:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootmysqlsifresi
+      MYSQL_DATABASE: mywordpressdb
+      MYSQL_USER: wordpressuser
+      MYSQL_PASSWORD: mysqlpassword
+    networks:
+      - baysanwpnet
+
+
+  mywp:
+    image: wordpress:latest
+    # stack ile çalışacağımızdan imajın önceden oluşturulmuş olması gerekiyor
+    # compose'daki gibi build kullanamayız
+    depends_on:
+      - veritabani
+    ports:
+      - "80:80"
+    environment: 
+      WORDPRESS_DB_HOST: veritabani:3306
+      WORDPRESS_DB_USER: wordpressuser
+      WORDPRESS_DB_PASSWORD: mysqlpassword
+      WORDPRESS_DB_NAME: mywordpressdb
+      WORDPRESS_TABLE_PREFIX: wp
+    networks: 
+      - baysanwpnet
+    
+    deploy:
+    # stack kullanırken bu bloğu girmemiz gerek
+      replicas: 3
+      # kaç adet replikası olsun? bunun için swarm bölümüne bakabiliriz
+      update_config:
+        parallelism: 2
+        # aynı anda kaç adet güncellensin
+        delay: 10s
+        # güncellerken ne kadar beklesin
+        order: stop-first
+
+
+volumes:
+  verilerim:
+
+
+networks:
+  baysanwpnet:
+    driver: overlay
+    # swarm ile çalışacağımız için overlay network oluşturuyoruz
