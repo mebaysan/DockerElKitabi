@@ -40,6 +40,7 @@
     - [ENTRYPOINT ve CMD Farkı](#entrypoint-ve-cmd-farkı)
     - [Exec Form ve Shell Form Farkı](#exec-form-ve-shell-form-farkı)
     - [Multi-stage Build](#multi-stage-build)
+    - [ARG](#arg)
 
 
 # Giriş
@@ -512,6 +513,15 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - İmaj oluştururken, oluşturma aşamalarını kademelere bölmemize ve ilk kademede yarattığımız imaj içerisindeki dosyaları bir sonraki kademede oluşturacağımız imaja kopyalayabilmemize imkan sağlar. Bu sayede son imajımızın boyutunun küçülmesi sağlanır.
   - Ör: Bir Go uygulaması yazdık ve bunu derleyip sunucuya göndereceğiz, imaj oluştururken önce kodu derler çalışan bir halini hazırlarız. Sonrasında bu çalışan derlenmiş dosyayı 2. aşamada nihai imaja koyar ve imajı oluştururuz. Bu sayede gereksiz yere kaynak kodlarını veya go derleyicisini imaj içerisinde tutmamıza gerek kalmaz
 - Örnekler için [buraya](uygulamalar/MultiStageBuild/Dockerfile) bakabilirsiniz
+
+
+
+### ARG
+- İmaj oluştururken kullanbildiğimiz bir diğer parametre ise ARG'dır. Sadece build aşamasında kullanılabilir ve sonrasında container ayağa kalktığında erişilemez. 
+- Örnek için buraya bakabilirsiniz.
+- Örnek bir Build Arg gönderimi
+  - `docker image build -t mytest2 --build-arg VERSION=3.8.1 .`
+
 
 
 
