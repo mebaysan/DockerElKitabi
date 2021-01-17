@@ -533,6 +533,6 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Öncelikle localimizde bir container oluşturur ve içerisinde gerekli kurulumları vs yaparız
 - Ardından `docker commit <LocalContainerName> <NewImageTag>` komutu ile o container'dan bir imaj oluşturmuş oluruz
   - Ör: `docker commit localcont1 mebaysan/prodcont1:latest`
- 
+- `docker commit -c 'CMD ["command 1", "command 2"]' <LocalContainerName> <NewImageTag>` -> -c parametresi ile CMD, EXPOSE vb. komutları bu imaja ekleyebiliriz
 
 
