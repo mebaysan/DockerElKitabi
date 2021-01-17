@@ -57,6 +57,7 @@
     - [Docker Swarm init](#docker-swarm-init)
     - [Swarm Service](#swarm-service)
     - [Overlay Network](#overlay-network)
+- [Docker Secret](#docker-secret)
 
 
 # Giriş
@@ -742,6 +743,35 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 - Swarm altında yaratılan servisler aynı overlay network üzerinde birbirlerine servis isimleriyle ulaşabilir. Docker burada hem dns çözümlemesi hizmeti hem de load balancing hizmeti sağlar
 - Overlay network üzerinde port publsh de yapabiliriz. Swarm overlat networklerde ingress routing mesh destekler. Port publish edip Docker host üzerinden o porta erişirsek Docker o host üstünde o portun publish olduğu bir container bulunmasa bile bulunan bir host'a trafiği yönlendirecek ve cevap verecektir
 - `docker network create -d overlay over-net` -> adı over-net olan overlay bir network oluştur
+
+
+
+# Docker Secret
+- Conteinar'larda plain text olarak tutmamızın güvenlik zafiyeti oluşturabileceği username ve password gibi verileri secret objeleri şeklinde encrypted olarak transfer edebiliriz
+- Docker Swarm, aynı volume ve container'lar gibi birer Docker objesidir
+- Swarm altında bir isim ve değer şeklinde secretler oluşturabiliriz. Bu objeler Swarm cluster'ın raft deposunda encrypted olarak saklanıyor. Bu secretleri istediğimiz servislere bağlayabiliyoruz. Secret, Swarm manager'dan servisin çalışacağı container'a transfer ediliyor (encrypted). Bağlandığı service container'larının /run/secrets klasöründe erişilebilecek şekilde map ediliyor. O container bu path içindeki objeye erişiyor ve kullanıyor
+- `docker swarm init` diyerek swarm cluster oluşturuyoruz
+- Secret oluşturmanın iki yolu vardır. Birincisi metin dosyalarından oluşturmaktır
+  - username.txt ve password.txt dosyalarımın olduğu dizine gidiyorum. `docker secret create <SecretName> <FilePath>` komutu ile secret oluşturuyoruz
+    - `docker secret create username ./username.txt`
+    - `docker secret create password ./password.txt`
+  - `docker secret ls` ile Secret'leri listeleriz
+  - `docker secret rm <SecretName>` ile Secret sileriz
+  - `docker secret inspect <SecretName>` ile Secret inceleyebiliriz
+- İkinci yöntem ise terminalden oluşturmaktır
+  - `echo "<SECRET>" | docker create <SecretName> -`
+    - `echo "Bu bir secrettir" | docker secret create deneme -`
+- `docker service create -d --name secrettest --secret username --secret password mebaysan/basitflaskimaj` -> bir servis oluşturduk ve içerisine cluster'daki secretları gönderdik
+- `docker exec -it 0c sh` -> oluşturduğumuz container'a bağlandık
+- `cd /run/secrets` -> secretların tutulduğu dizine gidiyoruz ve orada oluşturduğumuz secret isimleriyle dosyalar görüyoruz. Bunların değerleri de secretların değerleridir
+- Secret'i güncellemek istersek service'i güncellememiz gerekir
+- Önce cluster'da yeni bir secret oluşturuyoruz (varsayalım ki username2 adında olsun)
+  - `docker service update --secret-rm username --secret-add username2 secrettest`
+    - `--secret-rm username` secrettest servisindeki username adlı secreti sil
+    - `--secret-add username2` ilgili servisteki username secret'in yeni değerini cluster'daki username2 secretinin değeri olarak güncelle
+
+
+
 
 
 
