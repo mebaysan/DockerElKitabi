@@ -44,6 +44,10 @@
     - [Docker Commit](#docker-commit)
     - [Docker Save-Load](#docker-save-load)
     - [Registry](#registry)
+- [Compose ve Swarm](#compose-ve-swarm)
+  - [Docker Compose](#docker-compose)
+  - [Docker Compose CLI](#docker-compose-cli)
+  - [Docker Compose Yaml Dosyası](#docker-compose-yaml-dosyası)
 
 
 # Giriş
@@ -569,6 +573,42 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
     - `docker push localhost:5000/localcont1`  -> localdeki imajı registry'e kayıt etti
     - `docker pull localhost:5000/localcont1` bu adrese erişebilen makinalar; komutu ile local registry'deki imajı çekebilir
 
+
+# Compose ve Swarm
+
+
+## Docker Compose
+- Compsoe, çoklu Docker uygulamalarını oluşturmak ve çalıştırmak için kullanılan bir araçtır
+- Compose ile uygulamanın hizmetlerini yapılandırmak için bir YAML dosyası kullanılır
+- Daha sonra tek bir komut ile tüm hizmetleri yapılandırmaya başlar ve sistemi başlatırız
+- Compose production için çok uygun bir araç değildir. Development aşaması için idealdir
+- Compose, Docker Engine ile birlikte gelen bir araç değildir. Bunu ayrıca sisteme kurmamız gerekir.
+  - Mac ve Windows sistemlerde Docker Desktop kurduğumuzdan bu uygulama ile birlikte kurulu olarak Compose gelmektedir
+- `docker-compose.yml` dosyası içerisinde gerekli konfigürasyonlar tutulur
+- `docker-compose up -d` ile .yml dosyası kullanılarak sistem ayağa kaldırılır
+- `docker compose down` ile sistem kapatılır
+
+
+
+## Docker Compose CLI
+- docker-compose komutlarını kullanmak için yml dosyası ile aynı dizinde olmamız önemlidir
+- `docker-compose up` -> **aynı dizindeki** docker-compose.yml dosyasını kullanarak sistemi başlatır
+  - `docker-compose up -d` -> arka planda (detach) çalıştırır
+  - docker objelerini isimlendirirken; sistemdeki diğer objeler ile çakışmasın diye docker-compose.yml dosyasının bulunduğu klasör adıyla başlayan isimlendirme yapar -> `klasorAdi_objeAdi`
+- `docker-compose down` -> tüm servisleri (docker objeleri) kapatır ve siler
+  - **her şeyi siler fakat volume'leri silmez**
+- `docker-compose config` ile docker-config.yml dosyasını gösterir
+- `docker-compose images` -> servislerin hangi imajlarla oluştuğunu gösterir
+- `docker-compose logs` -> tüm servislerin loglarını listeler
+- `docker-compose exec` -> compose ile oluşturduğumuz servisin içinde komut çalıştırır
+  - `docker-compose exec <ServiceName> <Command>`
+
+
+
+
+## Docker Compose Yaml Dosyası
+- Detaylar için [buraya](uygulamalar/Compose&Swarm/intro/docker-compose.yml) bakabilirsiniz
+- İlgili dizinde `docker-compose up -d` komutu sayesinde bu config dosyasından sistemi ayağa kaldırıyorum. `http://127.0.0.1/` adresine gittiğimizde başarılı bir şekilde wordpress kurulumunu görmüş olacağız
 
 
 

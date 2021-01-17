@@ -1,0 +1,72 @@
+# yaml bir veri serilizasyon dilidir
+# verileri key-value olarak tutar
+# her yaml dosyası bir version keyi ile başlamak zorundadır
+# top level key'ler -> version services volumes networks
+
+# Senaryo: bir veritabanı servisi olacak bir de wordpress servisi, ardından 2 servis arasında bağlantı kurarak wordpress uygulamasını ayağa kaldıracağız
+
+version: "3.9"
+# version -> docker compose dosyasının hangi versiyonu ile kullanmak istiyoruz anlamına gelir
+
+services:
+# container'ları burada tanımlıyoruz
+  veritabani:
+    # veritabani -> service (container) adı
+    image: mysql:5.7
+    # hangi imajdan oluşturacağız
+    restart: always
+    # her seferinde yeniden başlatacak
+    # container oluştururken kullandığımız --restart parametresine karşılık gelir olarak düşünebiliriz
+    volumes:
+      - verilerim:/var/lib/mysql
+      # verilerim adında bir volume oluşturup container altındaki pathe bağlıyorum
+      - ikincivolume:/baysandata
+      # liste halinde birden fazla öğe ekleyebildiğimiz için - kullanarak tanımladık
+      # yani şöyle düşünebiliriz volumes = [verilerim:/var/lib/mysql, ikincivolume:/baysandata, ...]
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootmysqlsifresi
+      MYSQL_DATABASE: mywordpressdb
+      MYSQL_USER: wordpressuser
+      MYSQL_PASSWORD: mysqlpassword
+      # container oluştururken --env MYSQL_USER="wordpressuser" yapıyorduk, compose ile dosya hazırlarken de bu şekilde belirtmemiz gerekir
+    networks:
+      - baysanwpnet
+      # bu servisi baysanwpnet adındaki ağa bağladık
+      # docker container run --name veritabani --net baysanwpnet mysql -> container oluştururken de bu işleme karşılık gelecekti
+  
+  mywp:
+  # mywp adında bir servis (container) oluşturuyoruz
+    image: wordpress:latest
+    depends_on:
+    # hangi servislere bağımlı olduğunu belirtiyoruz
+      - veritabani
+      # önce database servisimiz (veritabani) ayağa kalkacak ki sonra wordpress bu servise bağlanabilsin ve çalışabilsin
+    restart: always
+    ports:
+      - "80:80"
+      # host'un 80 portunu servisin 80 portuna publish et
+      # birden fazla port tanımlayabiliriz
+    environment: 
+      WORDPRESS_DB_HOST: veritabani:3306
+      # veritabanı servisinde 3306 portu
+      WORDPRESS_DB_USER: wordpressuser
+      WORDPRESS_DB_PASSWORD: mysqlpassword
+      WORDPRESS_DB_NAME: mywordpressdb
+      WORDPRESS_TABLE_PREFIX: wp
+      # aslında buradaki olay basit bir wordpress ayağa kaldırmak, veritabqanı servisinde oluşturduğumuz mysql db'e oluşturduğumuz wordpress servisini bağlarken ordaki db bilgilerini burada set ediyoruz ki bağlanabilelim
+    networks: 
+      - baysanwpnet
+      # 2 servis aynı ağda olacak
+
+volumes:
+# kullanacağımız volume'leri burada tanımlarız
+  verilerim:
+  # verilerim adında bir volume oluşturduk, bu volume'u veritabanı servisinde kullanacağız
+  ikincivolume:
+
+networks:
+# kullanacağımız network objelerini burada tanımlarız
+  baysanwpnet:
+  # bu sistemde kullanılacak (veritabani servisindeki) network'u burada oluşturuyoruz
+    driver: bridge
+    # hangi driver'ı kullanacak
