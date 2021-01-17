@@ -46,8 +46,9 @@
     - [Registry](#registry)
 - [Compose ve Swarm](#compose-ve-swarm)
   - [Docker Compose](#docker-compose)
-  - [Docker Compose CLI](#docker-compose-cli)
-  - [Docker Compose Yaml Dosyası](#docker-compose-yaml-dosyası)
+    - [Docker Compose CLI](#docker-compose-cli)
+    - [Docker Compose Yaml Dosyası](#docker-compose-yaml-dosyası)
+    - [Docker Compose Build](#docker-compose-build)
 
 
 # Giriş
@@ -590,7 +591,7 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 
-## Docker Compose CLI
+### Docker Compose CLI
 - docker-compose komutlarını kullanmak için yml dosyası ile aynı dizinde olmamız önemlidir
 - `docker-compose up` -> **aynı dizindeki** docker-compose.yml dosyasını kullanarak sistemi başlatır
   - `docker-compose up -d` -> arka planda (detach) çalıştırır
@@ -606,9 +607,16 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 
-## Docker Compose Yaml Dosyası
+### Docker Compose Yaml Dosyası
 - Detaylar için [buraya](uygulamalar/Compose&Swarm/intro/docker-compose.yml) bakabilirsiniz
 - İlgili dizinde `docker-compose up -d` komutu sayesinde bu config dosyasından sistemi ayağa kaldırıyorum. `http://127.0.0.1/` adresine gittiğimizde başarılı bir şekilde wordpress kurulumunu görmüş olacağız
 
 
 
+### Docker Compose Build
+- İstersek **imajımızı** compose ayağa kalkarken oluşacak şekilde ayarlayabiliriz
+- Bunun için docker-compose.yml dosyası ile aynı dizinde bir Dockerfile oluşturmamız gerekir. Dockerfile içerisinde istediğimiz imajı hazırlarız.
+- Compose file içinde ise servisi hazırlarken image yerine `build` key'ini kullanırız ve build olacak Dockerfile'ı aynı dizinde olduğundan `.` ile belirtiriz
+![compose-build](./static/compose/Screen%20Shot%202021-01-17%20at%2012.17.21.png)
+- Daha detaylı bilgi için [buraya](https://github.com/ozgurozturknet/AdanZyeDocker/tree/master/kisim6/bolum68) bakabiliriz
+- 
