@@ -50,6 +50,13 @@
     - [Docker Compose Yaml Dosyası](#docker-compose-yaml-dosyası)
     - [Docker Compose Build](#docker-compose-build)
   - [Container Orchestration](#container-orchestration)
+    - [Docker Swarm](#docker-swarm)
+    - [Swarm Manager ve Worker Node](#swarm-manager-ve-worker-node)
+      - [Manager Node](#manager-node)
+      - [Worker Node](#worker-node)
+    - [Docker Swarm init](#docker-swarm-init)
+    - [Swarm Service](#swarm-service)
+    - [Overlay Network](#overlay-network)
 
 
 # Giriş
@@ -58,6 +65,10 @@ Docker öğrenirken aldığım notlar.
 Genellikle Özgür Öztürk'ün [Docker eğitimi](https://www.udemy.com/course/adan-zye-docker/)ni izlerken not aldım.
 
 Elimin altında Türkçe kaynak olması için [Docker ve Konteyner Uygulamaları](https://www.amazon.com.tr/Docker-Konteyner-Uygulamalar%C4%B1-Deniz-Parlak/dp/6058060761/ref=sxts_sxwds-bia-wc-rsf-lq2a1_0?__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&cv_ct_cx=docker&dchild=1&keywords=docker&pd_rd_i=6058060761&pd_rd_r=adeb9eba-433e-4a3e-86e0-e81304013581&pd_rd_w=yeCbD&pd_rd_wg=E8mQH&pf_rd_p=1afd11f1-1dc6-4ec0-a331-2a221d78fd95&pf_rd_r=ZQNNXBF5BV4D5Z92G71P&psc=1&qid=1610552031&sr=1-1-569cd1f4-72a6-4f1d-b3c5-cf7f1ae39fbb) kitabını almıştım ve bazen buradan faydalandım.
+
+*Metinlerin bir bölümünü Özgür Hoca'nın sunumundan aldım.
+
+*Naçizane; [eğitimi](https://www.udemy.com/course/adan-zye-docker/) şiddetle önerebilirim
 ## Neden Docker
 
 Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen platformlar listesinde üst sıralarda yer alıyor. İş ilanlarında aranan bir özellik :stuck_out_tongue_winking_eye:
@@ -637,6 +648,100 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
     - Container uygulamalarının dağıtımını, ölçeklendirilmesini ve yönetimini otomatikleştirmek için oluşturulmuş açık kaynaklı bir sistemdir
     - Kolay yönetim ve keşif için uygulamayı oluşturan container'ları mantıksal birimler halinde gruplandırır
     - Google'da 15 yıldan fazla süreye sahip olan container deneyiminin açık kaynak topluluk dünyası üyelerinin tecrübelerine eklenerek oluşturulmuştur
+
+
+
+### Docker Swarm
+- Docker Engine'e gömülü bir container orchestration çözümüdür
+- Bir docker ana bilgisayar havuzunu tek bir sanal ana bilgisayara dönüştürür
+- Hostlar arasında şu portlar açık olmalıdır
+  - TCP port 2377 -> Cluster yönetimi
+  - TCP ve UDP port 7946 -> Nodelar arası iletişim
+  - UDP port 4789 -> Overlay network
+
+
+
+### Swarm Manager ve Worker Node
+#### Manager Node
+- Bir adet manager tarafından diğer hostlar yönetilir
+- docker swarm init komutunu çalıştırdığımızda üzerinde bulunduğumuz host sistemi engine moddan swarm mode geçirir
+- Swarm birden fazla manager node destekler ve bu sayede yüksek erişilebilirlik sağlar. Bir managerda sorun olursa diğer manager devreye girer ve iş yürümeye devam eder
+- Manager nodelardan yalnızca 1 tanesi lider olarak seçilidir ve tüm yönetim lider tarafından yapılır. Diğer manager nodelar pasif durumdadır. Pasif manager nodelardan birine bir komut verip iş yapmasını istersek bu sadece proxy görevi görür ve komutu lider node'a iletir
+- Birden fazla manager olan ortamlarda bir adet lider seçilmelidir. Swarm bunu otomatik halleder ve bunun için Raft Consensus algoritmasını kullanır. Raft algoritması; lider seçimi için kuralları belirlemeye yarar. Mesela ortamda 5 manager olan durumda bir şekilde lider olan nodea erişilemezse belirli bir zaman sonra kalan 4 node kendi aralarında oylama yaparak lider belirler. Artık swarm-cluster'ın yönetimi bu lider tarafından yapılır
+- Raft algoritması yalnızca (n-1)/2 sayıda nodeun devre dışı kalmasını tolere edebilir. (5 node için max 2 hata tolere) Aksi halde yönetim altyapısı çalışmayacaktır
+- Raft algoritmasının düzgün çalışabilmesi için ve lider seçiminin sorunsuz olması için ortamın her zaman tek sayıda manager nodela kurulmuş olması gerekir. 7'den fazla manager olduğu durumlarda ortamda daha fazla sorun çıkması muhtemeldir.
+
+#### Worker Node
+- Swarm cluster kurulur, ve cluster'a worker node olarak dahil ol deriz
+- Manager node'dan sertifika çekerler ve emir beklerler
+- İstediğimiz sayede worker node ekleyebiliriz
+
+### Docker Swarm init
+- Bu bölüm için [labs.play-with-docker.com](https://labs.play-with-docker.com/) adresine gidiyorum ve 5 adet instance oluşturuyorum
+- Bir hostu swarm moda alacağız
+  - `docker swarm init --advertise-addr 192.168.0.8` bu hostun swarm modunu aktif ediyoruz (192.168.0.8 play with docker tarafından kullandığımız hosta verilen IP)
+    - advertise-addr -> host üzerindeki kullanmak istediğimiz network kartına ait adres
+  - `docker swarm join-token manager` -> bir nodeu cluster'a manager olarak eklemek için gerekli olan komutu ve tokeni verecek
+    - manager olarak eklemek istediğimiz node'a (hosta,makinaya,cihaza) gidip ilgili komutu yapıştırdığımızda cluster'a manager olarak eklenecek
+  - `docker swarm join-token worker` -> bir node'u cluster'a worker olarak eklemek için gerekli olan komutu ve tokeni verecek
+    - aynı şekilde worker olarak eklemek istediğimiz node'da çalıştırıp nodeu worker olarak cluster'a ekleyeceğiz
+- swarm mode'u aktif ettiğimiz node'a gidip `docker node ls` komutu ile cluster hakkında bilgi sahibi olabiliriz
+- swarm manager olan node'a gidip `docker service create --name test --replicas=5 -p 8080:80 nginx` komutu ile
+  - adı test olan (--name)
+  - 8080 portu 80 portuna publish edilmiş (-p)
+  - nginx imajından
+  - 5 adet container oluştur (--replicas=5)
+- `docker service ps <ServiceName>` -> adı verilen service hakkında bilgi getirir
+
+
+
+
+### Swarm Service
+- Swarm service'lerinde 2 mod vardır.
+  - **Replicated**
+    - Aksini belirtmediğimiz sürece bu modda servis oluşturulur
+    - Oluşturmak istediğimiz servisin kaç replica içereceğini belirtiriz
+    - Swarm uygun nodelarda o sayıda replica oluşturur
+  - **Global**
+    - Servisin kaç replica içereceğini belirtmeyiz. Swarm altındaki her node üzerinde 1 replica oluşturur-
+- `docker service create --name test nginx` -> nginx imajından test adında servis oluştur
+  - replika sayısını belirtmediğimiz için 1 adet oluşturdu
+- `docker service ls` -> service listesini görebiliriz
+- `docker service ps test` -> test adındaki servisi altındaki tasklara ait detayları görebiliriz
+- `docker service logs test` -> test servisi altındaki tüm container'lara ait logları gösterir
+- `docker service inspect test` -> test servisine ait detaylar
+- Swarm servislerinin en önemli özelliklerinden biri servislere hızlıca yeni replikalar oluşturabiliriz
+  - `docker service scale test=3` ile test servisimize yeni 2 replika daha (zaten 1 replika ile oluşturmuştuk) ekliyor. Aynı şekilde azaltabiliriz de
+- `docker service rm test` -> test adındaki servisi sileriz
+- `docker service create --name myglb --mode=global nginx` -> servisi global modda oluşturur (her node üzerinde 1 replika)
+- Update işlemi
+  - update yapınca servisteki containerlardan birini siler yerine yeni güncellenmiş container'ı koyar ve sıradaki eski container'a geçer, siler yerine güncellenmişi koyar ve diğerine geçer ...
+  - `docker service create --name websrv --network over-net -p 8080:5000 --replicas=10 mebaysan/basitflaskimaj`
+    - adı websrv olan
+    - over-net adında oluşturulmuş network driver'a bağlı
+    - 8080:5000 port publish yapılmış olan
+    - 10 adet replikaya sahip bir servis oluştur (play with docker platformu üzerinde over-net adında bir overlay network oluşturdum & 3 manager 2 workerlı bir cluster oluşturmuştum)
+  - `--update-delay` -> bu parametre, güncellemeler arasında ne kadar bekleyeceğini belirtmemizi sağlar (bir containeri sil gyerien güncellenmişi koy parametre kadar bekle diğerine geç gibi)
+  - `--update-parallelism` -> bu parametre sayesinde aynı kanda kaç container'ın güncelleneceğini söyleriz (aynı anda 2 container sil güncelle 5 sn bekle diğer ikisine geç gibi)
+  - `docker service update --detach --update-delay 5s --update-parallelism 2 --image mebaysan/basitflaskimaj websrv`
+    - arkaplanda (detach)
+    - 5 saniyede bir (update-delay)
+    - aynı anda 2 container olacak şekilde
+    - mebaysan/basitflaskimaj adındaki imajdan
+    - websrv adındaki servisi güncelle
+- `docker service rollback --detach websrv` -> arkaplanda websrv adındaki servisi bir önceki haline getir
+
+
+### Overlay Network
+- Overlay network aslında bir network driver'dır
+- Farklı merkezlerde bulunan nodelar sanki aynı merkezdeymiş gibi haberleşebilir
+- Bir swarm cluster oluşturulduğu zaman ingress adında bir overlay network de otomatik olarak oluşturulur. Aksini belirtmediğimiz sürece oluşturduğumuz servisler bu overlay network'e bağlanır
+- İstersek user defined overlay networkler de oluşturabiliriz
+- Overlay networklerin temel yönetim katmanının haberleşme altyapısı encryptedir. Fakat buraya bağladığımız containerların birbirleriyle iletişimi varsayılan olarak encrypted değildir. Overlay network oluştururken `--opt encrypted` parametresini kullanarak bu trafiğin de encrypted olmasını sağlayabiliriz. Bu opt encrypted overlay netowrk trafiğini biraz yavaşlatacaktır.
+- Aynı overlay network'e bağlı servislerin containerları birbirleriyle herhangi bir port kısıtlaması olmaksızın haberleşebilirler ve sanki aynı ağdaymış gibi çalışırlar.
+- Swarm altında yaratılan servisler aynı overlay network üzerinde birbirlerine servis isimleriyle ulaşabilir. Docker burada hem dns çözümlemesi hizmeti hem de load balancing hizmeti sağlar
+- Overlay network üzerinde port publsh de yapabiliriz. Swarm overlat networklerde ingress routing mesh destekler. Port publish edip Docker host üzerinden o porta erişirsek Docker o host üstünde o portun publish olduğu bir container bulunmasa bile bulunan bir host'a trafiği yönlendirecek ve cevap verecektir
+- `docker network create -d overlay over-net` -> adı over-net olan overlay bir network oluştur
 
 
 
