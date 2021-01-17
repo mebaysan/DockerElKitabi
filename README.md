@@ -41,6 +41,7 @@
     - [Exec Form ve Shell Form Farkı](#exec-form-ve-shell-form-farkı)
     - [Multi-stage Build](#multi-stage-build)
     - [ARG](#arg)
+    - [Docker Commit](#docker-commit)
 
 
 # Giriş
@@ -524,5 +525,14 @@ Yeni nesil IT sistemleri Docker üzerinde koşuyor. En çok kullanılmak istenen
 
 
 
+
+
+### Docker Commit
+- Dockerfile olmadan da docker imaj oluşturabiliriz
+- Doğru kullanım Dockerfile olsa da tek yöntem bu değildir
+- Öncelikle localimizde bir container oluşturur ve içerisinde gerekli kurulumları vs yaparız
+- Ardından `docker commit <LocalContainerName> <NewImageTag>` komutu ile o container'dan bir imaj oluşturmuş oluruz
+  - Ör: `docker commit localcont1 mebaysan/prodcont1:latest`
+ 
 
 
