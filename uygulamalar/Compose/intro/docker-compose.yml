@@ -1,4 +1,4 @@
-# yaml bir veri serilizasyon dilidir
+# yaml bir veri serilizasyon dilidir.
 # verileri key-value olarak tutar
 # her yaml dosyası bir version keyi ile başlamak zorundadır
 # top level key'ler -> version services volumes networks
